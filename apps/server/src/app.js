@@ -1,22 +1,31 @@
 import express from "express";
-import cors from "cors"
+import cors from "cors";
 
 const app = express();
 
-app.use(cors({
+app.use(
+  cors({
     origin: process.env.CORS_ORIGIN,
-    credentials: true
-}))
+    credentials: true,
+  })
+);
 
-app.use(express.json({
-    limit: "20kb"
-}))
-
-app.use(express.urlencoded({
+app.use(
+  express.urlencoded({
     extended: true,
-    limit: "20kb"
-}))
+    limit: "20kb",
+  })
+);
 
-export {
-    app
-}
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith("/api/v1/webhook")) {
+    next();
+  } else {
+    express.json({
+      limit: "20kb",
+    })(req, res, next);
+  }
+  next();
+});
+
+export { app };
