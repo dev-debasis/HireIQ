@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, skipMiddlewareFunction } from "mongoose";
 
 const matchSchema = new Schema({
     jobId: {
@@ -43,10 +43,10 @@ const matchSchema = new Schema({
         default: [],
     },
 
-    evidenceSnippets: {
-        type: [String],
-        default: [],
-    },
+    evidenceSnippets: [{
+        skill: String,
+        snippet: String,
+    }],
 
     shortlisted: {
         type: Boolean,

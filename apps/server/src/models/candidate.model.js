@@ -7,6 +7,12 @@ const candidateSchema = new Schema({
         required: true,
     },
 
+    uploadedForJob: {
+        type: Schema.Types.ObjectId,
+        ref: "Job",
+        required: true,
+    },
+
     name: {
         type: String,
         trim: true,
@@ -41,6 +47,12 @@ const candidateSchema = new Schema({
     embedding: {
         type: [Number],
         default: [],
+    },
+
+    status: {
+        type: String,
+        enum: ["uploaded", "parsed", "ready"],
+        default: "uploaded",
     },
 
 }, { timestamps: true });
