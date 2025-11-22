@@ -1,34 +1,28 @@
-import dotenv from 'dotenv'
-dotenv.config()
-import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs'
+import { v2 as cloudinary } from "cloudinary";
+import { Readable } from "stream";
 
-cloudinary.config({ 
-    cloud_name: process.env.CLOUDINARY_NAME, 
-    api_key: process.env.CLOUDINARY_API_KEY, 
-    api_secret: process.env.CLOUDINARY_API_SECRET
-})
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-const uploadOnCloudinary = async (localPath) => {
-    try {
-        if(!localPath){
-            throw new Error("Can't fetch the local file path")
-        }
+export const uploadOnCloudinary = async (fileBuffer, folder = "HireIQ") => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "auto",
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
 
-        const uploadResponse = await cloudinary.uploader.upload(localPath, {
-            resource_type: "raw"
-        })
-        console.log("File uploaded successfully")
-
-        fs.unlinkSync(localPath)
-        return uploadResponse
-    } catch (error) {
-        if(fs.existsSync(localPath)){
-            fs.unlinkSync(localPath)
-        }
-        console.error("Cloudinary Upload Error:", error);
-        return null
-    }
-}
-  
-export { uploadOnCloudinary }
+    const readableStream = new Readable();
+    readableStream.push(fileBuffer);
+    readableStream.push(null);
+    readableStream.pipe(stream);
+  });
+};
