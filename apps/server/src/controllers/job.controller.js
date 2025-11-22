@@ -1,17 +1,6 @@
 import { Job } from "../models/job.model.js";
-import OpenAI from "openai";
+import { generateEmbedding } from "../utils/generateEmbedding.js";
 
-const generateEmbedding = async (text) => {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_SECRET_KEY });
-
-  const embeddingResponse = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: text,
-    encoding_format: "float",
-  });
-
-  return embeddingResponse.data[0].embedding;
-};
 
 const createJob = async (req, res) => {
   try {
