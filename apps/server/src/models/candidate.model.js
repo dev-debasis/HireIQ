@@ -51,8 +51,12 @@ const candidateSchema = new Schema({
 
     status: {
         type: String,
-        enum: ["uploaded", "parsed", "ready"],
+        enum: ["uploaded", "parsed", "ready", "error"],
         default: "uploaded",
+    },
+    errorMessage: {
+        type: String,
+        default: "",
     },
 
 }, { timestamps: true });
