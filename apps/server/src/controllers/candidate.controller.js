@@ -44,7 +44,7 @@ const uploadCandidates = async (req, res) => {
     const createdCandidates = [];
 
     for (const file of req.files) {
-      const uploadedFile = await uploadOnCloudinary(file.path);
+      const uploadedFile = await uploadOnCloudinary(file.buffer);
 
       if (!uploadedFile) {
         return res
