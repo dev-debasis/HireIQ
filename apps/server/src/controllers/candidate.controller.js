@@ -1,20 +1,42 @@
 import { Candidate } from "../models/candidate.model.js";
 import { Job } from "../models/job.model.js";
-import pdfParse from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { generateEmbedding } from "../utils/generateEmbedding.js";
+import { SKILLS_DICTIONARY } from "../config/skillsDictionary.js";
+import { normalizeSkillsArray } from "../utils/normalizeSkills.js";
 
-const extractSkills = (resumeText, job) => {
-  const textLower = resumeText.toLowerCase();
-  const matched = [];
-  const missing = [];
 
-  job.requiredSkills.forEach((skill) => {
-    if (textLower.includes(skill.toLowerCase())) matched.push(skill);
-    else missing.push(skill);
-  });
+const extractSkills = (resumeText) => {
+  if (!resumeText || typeof resumeText !== "string") return [];
 
-  return { matched, missing };
+  const text = resumeText.toLowerCase();
+
+  const foundSkillsSet = new Set();
+
+  for (const key in SKILLS_DICTIONARY) {
+    const { canonical, synonyms } = SKILLS_DICTIONARY[key];
+
+    for (const synonym of synonyms) {
+      const normalizedSynonym = synonym.toLowerCase();
+
+      const pattern = new RegExp(
+        `\\b${escapeRegex(normalizedSynonym)}\\b`,
+        "i"
+      );
+
+      if (pattern.test(text)) {
+        foundSkillsSet.add(canonical);
+        break;
+      }
+    }
+  }
+
+  return Array.from(foundSkillsSet);
+};
+
+const escapeRegex = (str) => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 };
 
 const uploadCandidates = async (req, res) => {
@@ -79,28 +101,22 @@ const parseCandidateResume = async (candidateId) => {
     const candidate = await Candidate.findById(candidateId);
     if (!candidate) return null;
 
-    const pdfBuffer = await fetch(candidate.resumeUrl).then((r) =>
-      r.arrayBuffer()
-    );
-    const parsed = await pdfParse(Buffer.from(pdfBuffer));
+    const parser = new PDFParse({ url: candidate.resumeUrl });
+    const result = await parser.getText();
+    const resumeText = result.text || "";
 
-    const resumeText = parsed.text || "";
-
-    if (resumeText.length < 30) {
+    if (resumeText.length < 50) {
       candidate.status = "error";
       candidate.errorMessage =
-        "Resume content too short or unreadable. Please upload a text-based PDF.";
+        "PDF content unreadable — please upload a text-based resume.";
       await candidate.save();
-      console.warn(`Skipping invalid resume for candidateId: ${candidateId}`);
       return null;
     }
 
-    const job = await Job.findById(candidate.uploadedForJob);
-    const { matched } = extractSkills(resumeText, job);
+    const parsedSkills = extractSkills(resumeText);
 
     candidate.resumeText = resumeText;
-    candidate.parsedSkills = matched;
-
+    candidate.parsedSkills = normalizeSkillsArray(parsedSkills) ;
     candidate.status = "parsed";
     await candidate.save();
 
@@ -138,6 +154,15 @@ const processCandidatePipeline = async (req, res) => {
       return res.status(400).json({
         message: "candidateIds must be an array",
       });
+    }
+
+    for(const id of candidateIds) {
+      const candidate = await Candidate.findById(id);
+      if (!candidate) {
+        return res.status(404).json({ 
+          message: `Candidate with ID ${id} not found` 
+        });
+      }
     }
 
     const processed = [];
