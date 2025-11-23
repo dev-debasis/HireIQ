@@ -1,15 +1,15 @@
-import OpenAI from "openai";
+import { pipeline } from "@xenova/transformers";
+
+let embedder;
 
 const generateEmbedding = async (text) => {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_SECRET_KEY });
+  if (!embedder) {
+    embedder = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+  }
 
-  const embeddingResponse = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: text,
-    encoding_format: "float",
-  });
-
-  return embeddingResponse.data[0].embedding;
+  const result = await embedder(text, { pooling: "mean", normalize: true });
+  console.log(Array.from(result.data));
+  return Array.from(result.data);
 };
 
 export { generateEmbedding };
