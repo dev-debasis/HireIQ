@@ -4,8 +4,11 @@ import candidateRouter from "./routes/candidate.routes.js";
 import jobRouter from "./routes/job.routes.js";
 import matchRouter from "./routes/match.routes.js";
 import webhookRouter from "./routes/webhook.routes.js";
+import { clerkMiddleware } from "@clerk/express";
 
 const app = express();
+
+app.use(clerkMiddleware());
 
 app.use(
   cors({
@@ -29,7 +32,6 @@ app.use((req, res, next) => {
       limit: "20kb",
     })(req, res, next);
   }
-  next();
 });
 
 app.use("/api/v1/webhook", webhookRouter);
