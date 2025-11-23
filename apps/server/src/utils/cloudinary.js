@@ -1,5 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
 import { Readable } from "stream";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,22 +10,22 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadOnCloudinary = async (fileBuffer, folder = "HireIQ") => {
+export const uploadOnCloudinary = (fileBuffer) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
-        folder,
-        resource_type: "auto",
+        folder: "HireIQ",
+        resource_type: "raw",
+        use_filename: true,
+        unique_filename: true,
+        overwrite: false,
       },
       (error, result) => {
-        if (error) return reject(error);
-        resolve(result);
+        if (error) reject(error);
+        else resolve(result);
       }
     );
-
-    const readableStream = new Readable();
-    readableStream.push(fileBuffer);
-    readableStream.push(null);
-    readableStream.pipe(stream);
+    stream.end(fileBuffer);
   });
 };
+
