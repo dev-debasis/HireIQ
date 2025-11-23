@@ -1,6 +1,7 @@
+import mongoose from "mongoose";
 import { Job } from "../models/job.model.js";
 import { generateEmbedding } from "../utils/generateEmbedding.js";
-
+import { normalizeSkillsArray } from "../utils/normalizeSkills.js";
 
 const createJob = async (req, res) => {
   try {
@@ -10,13 +11,19 @@ const createJob = async (req, res) => {
       });
     }
 
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({
+        message: "Request body cannot be empty",
+      });
+    }
+
     const {
       jobTitle,
       jobDescription,
       requiredSkills,
       niceToHaveSkills,
       experienceLevel,
-    } = req.body;
+    } = req.body || {};
 
     if (
       !jobTitle ||
@@ -43,12 +50,17 @@ const createJob = async (req, res) => {
 
     const jobEmbedding = await generateEmbedding(jobDescription);
 
+    const normalizedRequiredSkills = normalizeSkillsArray(requiredSkills);
+    const normalizedNiceToHaveSkills = normalizeSkillsArray(
+      niceToHaveSkills || []
+    );
+
     const newJob = await Job.create({
       createdBy: req.user._id,
       jobTitle,
       jobDescription,
-      requiredSkills,
-      niceToHaveSkills,
+      requiredSkills: normalizedRequiredSkills,
+      niceToHaveSkills: normalizedNiceToHaveSkills,
       experienceLevel: experienceLevel || "Any",
       jobEmbedding,
     });
@@ -69,12 +81,17 @@ const createJob = async (req, res) => {
 const updateJob = async (req, res) => {
   try {
     if (!req.user) {
-      return res.status(403).json({
-        message: "Unauthorized Access",
-      });
+      return res.status(403).json({ message: "Unauthorized Access" });
     }
 
     const { jobId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+      return res.status(400).json({
+        message: "Invalid Job ID",
+      });
+    }
+
     const updateData = req.body;
 
     if (
@@ -95,21 +112,36 @@ const updateJob = async (req, res) => {
       });
     }
 
+    if (Array.isArray(updateData.requiredSkills)) {
+      updateData.requiredSkills = normalizeSkillsArray(
+        updateData.requiredSkills
+      );
+    }
+
+    if (Array.isArray(updateData.niceToHaveSkills)) {
+      updateData.niceToHaveSkills = normalizeSkillsArray(
+        updateData.niceToHaveSkills
+      );
+    }
+
     if (updateData.jobDescription) {
       updateData.jobEmbedding = await generateEmbedding(
         updateData.jobDescription
       );
     }
+
     const updatedJob = await Job.findOneAndUpdate(
       { _id: jobId, createdBy: req.user._id },
-      updateData,
+      { $set: updateData },
       { new: true }
     );
+
     if (!updatedJob) {
       return res.status(404).json({
         message: "Job not found or unauthorized",
       });
     }
+
     return res.status(200).json({
       message: "Job updated successfully",
       job: updatedJob,
@@ -125,6 +157,11 @@ const updateJob = async (req, res) => {
 
 const getJobsByHR = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(403).json({
+        message: "Unauthorized Access",
+      });
+    }
     const jobs = await Job.find({ createdBy: req.user._id }).sort({
       createdAt: -1,
     });

@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 router.route("/").post(requireHR, createJob);
-router.route("/:jobId").put(requireHR, updateJob);
+router.route("/:jobId").patch(requireHR, updateJob);
 router.route("/").get(requireHR, getJobsByHR);
 router.route("/:jobId").get(requireHR, getJobById);
 router.route("/:jobId").delete(requireHR, deleteJob);
