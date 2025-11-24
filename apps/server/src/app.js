@@ -4,6 +4,7 @@ import candidateRouter from "./routes/candidate.routes.js";
 import jobRouter from "./routes/job.routes.js";
 import matchRouter from "./routes/match.routes.js";
 import webhookRouter from "./routes/webhook.routes.js";
+import dashboardRouter from "./routes/dashboard.routes.js";
 import { clerkMiddleware } from "@clerk/express";
 
 const app = express();
@@ -38,5 +39,6 @@ app.use("/api/v1/webhook", webhookRouter);
 app.use("/api/v1/candidate", candidateRouter);
 app.use("/api/v1/job", jobRouter);
 app.use("/api/v1/match", matchRouter);
+app.use("/api/v1/dashboard", dashboardRouter);
 
 export { app };
