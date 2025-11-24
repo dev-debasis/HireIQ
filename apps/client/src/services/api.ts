@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestHeaders, AxiosRequestConfig, AxiosResponse, AxiosProgressEvent } from 'axios';
 // TODO: actual backend API URL after deploy
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://hireiq-4qmj.onrender.com';
 
 type AuthAxios = AxiosInstance & { __authInterceptorId?: number };
 
