@@ -161,14 +161,16 @@ const shortlistCandidate = async (req, res) => {
   try {
     const { matchId } = req.params;
 
-    const match = await Match.findByIdAndUpdate(
-      matchId,
-      { shortlisted: true },
-      { new: true }
-    );
+    const match = await Match.findById(matchId);
+    if (!match) {
+      return res.status(404).json({ message: "Match not found" });
+    }
+
+    match.shortlisted = !match.shortlisted;
+    await match.save();
 
     return res.status(200).json({
-      message: "Candidate shortlisted",
+      message: match.shortlisted ? "Candidate shortlisted" : "Candidate removed from shortlist",
       match,
     });
   } catch (err) {
