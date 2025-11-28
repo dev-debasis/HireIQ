@@ -1,167 +1,182 @@
-# HireIQ - AI-Powered Resume Matcher for HR
+# 🚀 **HireIQ – AI-Powered Resume Matcher for HR**
 
-An intelligent recruitment platform that helps HR professionals find the perfect candidates by matching resumes with job requirements using AI-powered analysis.
+### **Smart. Fast. Bias-Free Hiring.**
 
-## 🚀 Features
+HireIQ is an AI-powered recruitment platform that automates resume screening using intelligent parsing, skill extraction, vector embeddings, and candidate-job matching.
+It aims to make hiring **faster, fairer, and more efficient** for HR teams.
 
-- **Job Management**: Create and manage job postings with required and nice-to-have skills
-- **Resume Upload**: Drag-and-drop PDF resume upload with bulk processing
-- **AI Matching**: Intelligent skill matching with evidence extraction
-- **Score-Based Ranking**: Color-coded match scores (Green >75%, Yellow >50%, Red ≤50%)
-- **Candidate Shortlisting**: Mark top candidates for further review
-- **Notes System**: Add private notes to candidate profiles
-- **Dashboard Analytics**: Overview of jobs, candidates, and match statistics
-- **Clerk Authentication**: Secure HR-only access with professional user management
+---
 
-## 🛠️ Tech Stack
+## ✨ **Key Features**
 
-- **Frontend**: React 18 + Vite
-- **Styling**: Tailwind CSS + ShadCN UI
-- **Authentication**: Clerk
-- **State Management**: React Query
-- **Routing**: React Router v6
-- **API Client**: Axios
-- **File Upload**: React Dropzone
-- **Animations**: Framer Motion
+### 🔐 Authentication
 
-## 📁 Project Structure
+* Secure HR login with multiple OAuth Support
+* Other Logged in devices access 
 
-```
-src/
-├── components/
-│   ├── ui/              # ShadCN UI components
-│   ├── Layout.tsx       # Main app layout with sidebar
-│   ├── Sidebar.tsx      # Navigation sidebar
-│   ├── Navbar.tsx       # Top navigation bar
-│   ├── JobFormModal.tsx # Job creation modal
-│   ├── UploadDropzone.tsx # Resume upload component
-│   └── NotesModal.tsx   # Candidate notes modal
-├── pages/
-│   ├── Dashboard.tsx    # KPI cards and analytics
-│   ├── Jobs.tsx         # Job listings table
-│   ├── JobDetails.tsx   # Individual job view
-│   ├── Upload.tsx       # Resume upload interface
-│   └── Matches.tsx      # Match results with scoring
-├── services/
-│   └── api.ts           # API client and service functions
-└── routes/
-    └── AppRoutes.tsx    # Protected route configuration
-```
+* API protection 
 
-## 🔧 Setup Instructions
+### 🧳 Job Management
 
-### 1. Clone the repository
+* Create, view, update and delete job postings
+* Required vs Good-to-Have skills
+* Automatic job description embeddings for matching
+
+### 📄 Resume Upload & Parsing
+
+* Upload multiple resumes at once
+* Secure PDF storage
+* PDF text extraction
+* AI-powered + dictionary-based skill extraction
+* Skill normalization to canonical form
+
+### 🧠 AI Matching Engine
+
+* Candidate-to-job similarity scoring
+* Vector embeddings 
+* Weighted skill matching
+* Ranked candidate list with score breakdown
+
+### 📊 HR Dashboard
+
+* Job listing management
+* Candidate pipeline
+* Match results visualization
+
+
+---
+
+
+# 🛠️ **Technology Stack**
+
+### **Frontend**
+
+* React.js
+* Tailwind CSS
+* ShadCN
+* Vite
+* Axios
+* React Router
+
+### **Backend**
+
+* Node.js
+* Express.js
+* Multer
+* PDF-Parse v2
+* Cloudinary SDK
+* Mongoose
+* Custom AI Matching Engine
+* Skill Dictionary & Normalization Logic
+
+### **Storage & AI**
+
+* MongoDB Atlas
+* Cloudinary
+* AI Embedding Generator (custom)
+
+### **Deployment**
+
+* Frontend → **Vercel**
+* Backend → **Render**
+
+
+# 🚀 **Running Locally**
+
+## Backend
 
 ```bash
-git clone <your-repo-url>
-cd hireiq
-```
-
-### 2. Install dependencies
-
-```bash
+cd apps/server
 npm install
-```
-
-### 3. Configure environment variables
-
-Create a `.env` file in the root directory:
-
-```env
-# Clerk Authentication
-VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
-
-# Backend API URL
-VITE_API_BASE_URL=http://localhost:8000
-```
-
-### 4. Get your Clerk credentials
-
-1. Sign up at [clerk.com](https://clerk.com)
-2. Create a new application
-3. Copy your **Publishable Key** from the dashboard
-4. Paste it into your `.env` file
-
-### 5. Run the development server
-
-```bash
 npm run dev
 ```
 
-The app will be available at `http://localhost:8080`
-
-## 🔌 Backend API Integration
-
-The frontend is designed to work with a REST API. Update these endpoints in `src/services/api.ts`:
-
-### Jobs API
-- `GET /api/v1/jobs` - List all jobs
-- `GET /api/v1/jobs/:id` - Get job details
-- `POST /api/v1/jobs` - Create new job
-- `DELETE /api/v1/jobs/:id` - Delete job
-
-### Candidates API
-- `POST /api/v1/candidates/upload` - Upload resumes (multipart/form-data)
-- `POST /api/v1/candidates/process` - Process uploaded resumes
-- `GET /api/v1/candidates/job/:jobId` - Get candidates for a job
-
-### Matches API
-- `GET /api/v1/matches/:jobId/run` - Run AI matching algorithm
-- `GET /api/v1/matches/:jobId` - Get match results for a job
-- `PATCH /api/v1/matches/shortlist/:matchId` - Toggle shortlist status
-- `PATCH /api/v1/matches/notes/:matchId` - Update candidate notes
-
-### Dashboard API
-- `GET /api/v1/dashboard/stats` - Get dashboard statistics
-
-## 🎨 Design System
-
-The app uses the Obsidian theme with semantic color tokens:
-
-- **Primary**: Main brand color for key actions
-- **Secondary**: Supporting UI elements
-- **Muted**: Subtle backgrounds and borders
-- **Accent**: Highlights and interactive states
-- **Destructive**: Error and warning states
-
-Match score colors:
-- **Green** (>75%): Excellent match
-- **Yellow** (>50%): Good match
-- **Red** (≤50%): Weak match
-
-## 🔐 Authentication
-
-Only authenticated HR users can access the platform. The app uses Clerk for:
-
-- Email/password authentication
-- Social login (configurable)
-- User profile management
-- Session management
-- Protected routes
-
-## 📱 Responsive Design
-
-Fully responsive layout optimized for:
-- Desktop (1280px+)
-- Tablet (768px - 1279px)
-- Mobile (< 768px)
-
-The sidebar collapses on smaller screens for optimal mobile experience.
-
-## 🚀 Deployment
-
-Build for production:
+## Frontend
 
 ```bash
-npm run build
+cd apps/client
+npm install
+npm run dev
 ```
 
-The optimized build will be in the `dist` folder, ready for deployment to any static hosting service.
+---
 
-## 📄 License
 
-MIT License - feel free to use this project for your recruitment needs!
+# 🎯 **Real-World Impact**
 
-## 🤝 Contributing
+### **HR Teams**
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+* 10× faster screening
+* No manual resume scanning
+* Data-driven hiring
+* Instant shortlist generation
+
+### **Candidates**
+
+* Fair skill-based evaluation
+* No bias based on formatting or background
+* Higher visibility for deserving talent
+
+### **Businesses**
+
+* Reduced hiring cost
+* Better talent quality
+* Faster hiring cycles
+
+---
+
+# 🚀 **Future Scope (High-Value)**
+
+### 🌐 1. LLM-Powered Resume Understanding
+
+* Detailed experience extraction
+* Role-fit analysis
+* Explanation-based scoring
+
+### 🎤 2. AI Interviewer Module
+
+* Voice analysis
+* Behavioral signals
+* Technical Q&A auto-evaluation
+
+### 🌎 3. Multi-Language Parsing
+
+* Support for Indian & global languages
+* OCR for scanned resumes
+
+### 🔎 4. Fake Resume Detection
+
+* Cross-referencing GitHub/LinkedIn
+* Project verification
+
+### 🧠 5. Smart JD Generator
+
+* AI-generated job descriptions
+* Skill gap analysis
+
+### 🏢 6. ATS Integration for Enterprises
+
+* Lever & Greenhouse API integration
+* Marketplace for talent discovery
+
+### 📊 7. Hiring Analytics Dashboard
+
+* Bias detection
+* Skill market trends
+* Conversion funnel insights
+
+---
+
+# 🏆 **Why HireIQ Matters**
+
+> “We’re not just filtering resumes — we’re building the future of fair, fast, and intelligent hiring.”
+
+HireIQ transforms inefficient, biased hiring processes into a **scalable, AI-powered recruitment engine**, empowering HR teams and equalizing opportunities for candidates globally.
+
+---
+
+# 🙏 **Contributor**
+
+**[Debasis Khamari](mailto:debasiskhamari7@gmail.com)** — Full Stack Web Developer
+
+---
